@@ -1,6 +1,7 @@
 using System;
 using UnityEngine.UI;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MenuInputLoader : MonoBehaviour
 {
@@ -60,7 +61,7 @@ public class MenuInputLoader : MonoBehaviour
             PlayerPrefs.SetFloat("SnappingRotationSpeed", snappingRotationSpeed);
             
             PlayerPrefs.SetFloat("SnappingTranslationDistance", snappingTranslationDistance);
-            PlayerPrefs.SetFloat("SnappingTranslationDistance", snappingTranslationSpeed);
+            PlayerPrefs.SetFloat("SnappingTranslationSpeed", snappingTranslationSpeed);
             
             PlayerPrefs.SetFloat("TunnelingAmount", tunnelingAmount);
             PlayerPrefs.SetFloat("TunnelingSpeed", tunnelingSpeed);
@@ -69,5 +70,7 @@ public class MenuInputLoader : MonoBehaviour
         {
             Debug.Log("Invalid UserID key format. The parameters could not be parsed.");
         }
+        
+        SceneManager.LoadScene("TunnelingSnapping");
     }
 }

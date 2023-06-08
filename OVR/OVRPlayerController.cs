@@ -105,10 +105,10 @@ public class OVRPlayerController : MonoBehaviour
     private bool ReadyToMoveTurn;
     private int timeBeforeMoveAgain = 0;
     private bool canPress = true;
-    private float timeLeft = 0.5f; //Only used when SnapTranslation is true
+    public float timeLeft = 0.5f; //Only used when SnapTranslation is true
     private float timerToMove;//Only used when SnapTranslation is true
     private float timerToRotate;
-    private float timeLeftRotate = 1f;
+    public float timeLeftRotate = 1f;
     public GameObject fader;
 	public float yRot = 0;
 	IEnumerator rot;

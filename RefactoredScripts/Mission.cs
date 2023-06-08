@@ -174,12 +174,23 @@ public class Mission : MonoBehaviour
             tunnellingPro.accelerationMax = 0.5f;
         }
         
-        // Code from the version 2 of the project
+        // Tunneling
         if (PlayerPrefs.HasKey("tunnelingAmount"))
             tunnellingPro.effectCoverage = PlayerPrefs.GetFloat("tunnelingAmount");
-
         if (PlayerPrefs.HasKey("tunnelingSpeed"))
             tunnellingPro.accelerationStrength = PlayerPrefs.GetFloat("tunnelingSpeed");
+        
+        // Rotation
+        if (PlayerPrefs.HasKey("SnappingRotation"))
+            playerController.RotationRatchet = PlayerPrefs.GetFloat("SnappingRotation");
+        if (PlayerPrefs.HasKey("SnappingRotationSpeed"))
+            playerController.timeLeftRotate = PlayerPrefs.GetFloat("SnappingRotationSpeed");
+        
+        // Translation
+        if (PlayerPrefs.HasKey("SnappingTranslationSpeed"))
+            playerController.timeLeft = PlayerPrefs.GetFloat("SnappingTranslationSpeed");
+        if (PlayerPrefs.HasKey("SnappingTranslationDistance"))
+            playerController.distance = PlayerPrefs.GetFloat("SnappingTranslationDistance");
     }
 
     private void Update() {
