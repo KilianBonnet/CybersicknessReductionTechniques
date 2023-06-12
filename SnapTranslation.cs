@@ -26,7 +26,7 @@ public class SnapTranslation : MonoBehaviour {
 
         if (VrPlayer.SnapTranslation)
         {
-            VrPlayer.setMoveThrottle(Vector3.zero);
+            //VrPlayer.setMoveThrottle(Vector3.zero);
             if (ReadyToMoveTurn && OVRInput.Get(OVRInput.Button.PrimaryThumbstickUp))
             {
                 if (PlayerForward.GetComponent<canTeleport>().teleportationAvailable)

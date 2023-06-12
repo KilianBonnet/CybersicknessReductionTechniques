@@ -88,12 +88,12 @@ public class Mission : MonoBehaviour
         
         // Teleporting player and block its movements
         TeleportPlayer(checkpoints.GetChild(0).position);
-        playerController.canMove = false;
+        playerController.CanMove = false;
 
         // Setting up experiment parameters to hmd
         InitializeTunneling();
-        playerController.SetSnapRotation(hasRotationSnapping);
-        playerController.SetSnapTranslation(hasTranslationSnapping);
+        playerController.SnapRotation = hasRotationSnapping;
+        playerController.SnapTranslation = hasTranslationSnapping;
         
         // Updating ui
         compass.gameObject.SetActive(false);
@@ -110,7 +110,7 @@ public class Mission : MonoBehaviour
     private void StartMission() {
         missionState = MissionState.Playing;
         compass.gameObject.SetActive(true);
-        playerController.canMove = true;
+        playerController.CanMove = true;
         timers.checkpointTimeActive = true;
         
         UpdateCheckpointObjective(0);
@@ -136,7 +136,7 @@ public class Mission : MonoBehaviour
     private void EvaluateMission() {
         missionState = MissionState.NauseaMenu;
         timers.timeOfReturnActive = false;
-        playerController.canMove = false;
+        playerController.CanMove = false;
         compass.gameObject.SetActive(false);
         
         canvas.SetActive(true);
@@ -184,13 +184,13 @@ public class Mission : MonoBehaviour
         if (PlayerPrefs.HasKey("SnappingRotation"))
             playerController.RotationRatchet = PlayerPrefs.GetFloat("SnappingRotation");
         if (PlayerPrefs.HasKey("SnappingRotationSpeed"))
-            playerController.timeLeftRotate = PlayerPrefs.GetFloat("SnappingRotationSpeed");
+            playerController.SnapRotationCooldown = PlayerPrefs.GetFloat("SnappingRotationSpeed");
         
         // Translation
         if (PlayerPrefs.HasKey("SnappingTranslationSpeed"))
-            playerController.timeLeft = PlayerPrefs.GetFloat("SnappingTranslationSpeed");
+            playerController.SnapTranslationCooldown = PlayerPrefs.GetFloat("SnappingTranslationSpeed");
         if (PlayerPrefs.HasKey("SnappingTranslationDistance"))
-            playerController.distance = PlayerPrefs.GetFloat("SnappingTranslationDistance");
+            playerController.SnapDistance = PlayerPrefs.GetFloat("SnappingTranslationDistance");
     }
 
     private void Update() {
