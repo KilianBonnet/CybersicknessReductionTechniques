@@ -538,7 +538,7 @@ public class OVRPlayerController : MonoBehaviour {
                 snapTranslationTimer += Time.deltaTime; 
                 MoveThrottle = Vector3.zero;
             }
-            else if(MoveThrottle.magnitude > .1f){
+            else if(MoveThrottle.magnitude > 0){
                 snapTranslationTimer = 0;
                 MoveThrottle = MoveThrottle.normalized * SnapDistance;
             }

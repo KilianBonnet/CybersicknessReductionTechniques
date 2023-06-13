@@ -141,7 +141,7 @@ public class GameManager : MonoBehaviour
     /// Updating the UI according to the new condition counter and the size of experimental parameters to try.
     /// </summary>
     private void RefreshMissionCounter() {
-        trialUI.text = conditionCounter + "/" + experimentalParametersArray.Length;
+        trialUI.text = (conditionCounter + 1) + "/" + experimentalParametersArray.Length;
     }
 
     /// <summary>
@@ -153,7 +153,7 @@ public class GameManager : MonoBehaviour
         
         IncreaseCounterVariables();
         // Check if all the experimental parameters were carried out
-        if (conditionCounter >= 1) { // TODO : Put experimentalParametersArray.Length after testing
+        if (conditionCounter >= experimentalParametersArray.Length) { // TODO : Put experimentalParametersArray.Length after testing
             string[] filePaths = PlayerDataWriter.WritePlayerData(player); // Saving player data
             mailTo.SendEmail(player, filePaths);
             SceneManager.LoadScene("End");

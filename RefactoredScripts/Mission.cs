@@ -164,21 +164,14 @@ public class Mission : MonoBehaviour
         }
             
         tunnellingPro.enabled = hasTunneling;
-        
-        if (hasRotationSnapping) {
-            tunnellingPro.angularVelocityMax = 0;
-            tunnellingPro.accelerationMax = 0;
-        }
-        else {
-            tunnellingPro.angularVelocityMax = 13;
-            tunnellingPro.accelerationMax = 0.5f;
-        }
-        
+
         // Tunneling
         if (PlayerPrefs.HasKey("tunnelingAmount"))
             tunnellingPro.effectCoverage = PlayerPrefs.GetFloat("tunnelingAmount");
-        if (PlayerPrefs.HasKey("tunnelingSpeed"))
+        if (PlayerPrefs.HasKey("tunnelingSpeed")) {
             tunnellingPro.accelerationStrength = PlayerPrefs.GetFloat("tunnelingSpeed");
+            tunnellingPro.angularVelocityStrength = PlayerPrefs.GetFloat("tunnelingSpeed");
+        }
         
         // Rotation
         if (PlayerPrefs.HasKey("SnappingRotation"))
