@@ -48,9 +48,23 @@ Dependencies:
 ### OVRPlayerController
 It's the code made by Oculus in around 2019 includes in the old OculusIntegration plugin.
 While migrating to version 53.1 [I](https://github.com/KilianBonnet) noticed changes on OVRPlayerController script specifically.
-This script has not been updated by now and it still runs on an old version of OculusIntegration.
 
-This script is used by Oculus to listen to controller event and give motion and rotation to the OVRPlayerController GameObject.
+
+[OLD NOTE]<br>
+This script has not been updated by now and it still runs on an old version of OculusIntegration.<br>
+
+[NEW NOTE]<br>
+The old script had issues with snap translation. Oculus Integration Plugin is (at this time) a big mess. So I decided to update the OVRPlayerController and rewrite the modifications.
+
+Here are the big parts of the modifications 
+- Boolean **CanMove**: Enable/Disable movements.
+- Boolean **TranslationSnapping**: Enable/Disable the translation snapping
+- Float **SnapDistance** : The distance to teleport when using translation snapping
+- Float **SnapRotationCooldown** & **SnapTranslationCooldown**: How long the user should wait between two snaps.
+- Float **snapRotationTimer** & **snapTranslationTimer**: Internal clocks to proceed cooldowns. 
+
+Edited code can is marked with "[Custom parameters]" or "[Custom code]" annotations.
+
 
 ### VR Tunneling Pro
 This script was made by [SigtrapGames](https://github.com/sigtrapgames/VrTunnellingPro-Unity).

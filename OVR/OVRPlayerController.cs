@@ -535,7 +535,7 @@ public class OVRPlayerController : MonoBehaviour {
         if (CanMove && SnapTranslation) {
             // SnapTranslation is in cooldown
             if (snapTranslationTimer < SnapTranslationCooldown) {
-                snapTranslationTimer += Time.deltaTime;
+                snapTranslationTimer += Time.deltaTime; 
                 MoveThrottle = Vector3.zero;
             }
             else if(MoveThrottle.magnitude > .1f){
