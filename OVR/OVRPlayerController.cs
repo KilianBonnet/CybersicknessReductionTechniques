@@ -20,16 +20,25 @@
 
 using System;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
+
+public enum SnappingType {
+    Translation,
+    Rotation
+}
+
 
 /// <summary>
 /// Controls the player's movement in virtual reality.
 /// </summary>
 [RequireComponent(typeof(CharacterController))]
 public class OVRPlayerController : MonoBehaviour {
+    public static event Action<SnappingType, float> SnappingEvent;
+
     /// <summary>
     /// [Custom parameters] Allowing movements.
-    /// </summary>
+    /// </summary>s
     [Header("Movements configuration")]
     public bool CanMove;
 
@@ -231,11 +240,7 @@ public class OVRPlayerController : MonoBehaviour {
 
         InitialYRotation = transform.rotation.eulerAngles.y;
     }
-
-    void OnEnable()
-    {
-    }
-
+    
     void OnDisable()
     {
         if (playerControllerEnabled)
@@ -499,11 +504,13 @@ public class OVRPlayerController : MonoBehaviour {
                          (RotationEitherThumbstick && OVRInput.Get(OVRInput.Button.PrimaryThumbstickLeft))) {
                     snapRotationTimer = 0;
                     euler.y -= RotationRatchet;
+                    SnappingEvent?.Invoke(SnappingType.Rotation, SnapRotationCooldown);
                 }
                 else if (OVRInput.Get(OVRInput.Button.SecondaryThumbstickRight) ||
                          (RotationEitherThumbstick && OVRInput.Get(OVRInput.Button.PrimaryThumbstickRight))) {
                     snapRotationTimer = 0;
                     euler.y += RotationRatchet;
+                    SnappingEvent?.Invoke(SnappingType.Rotation, SnapRotationCooldown);
                 }
             }
             else
@@ -541,6 +548,7 @@ public class OVRPlayerController : MonoBehaviour {
             else if(MoveThrottle.magnitude > 0){
                 snapTranslationTimer = 0;
                 MoveThrottle = MoveThrottle.normalized * SnapDistance;
+                SnappingEvent?.Invoke(SnappingType.Translation, SnapTranslationCooldown);
             }
         }
 #endif

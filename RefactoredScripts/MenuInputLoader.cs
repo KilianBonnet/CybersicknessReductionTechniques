@@ -1,13 +1,14 @@
 using System;
+using TMPro;
 using UnityEngine.UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class MenuInputLoader : MonoBehaviour
 {
-    [SerializeField] private InputField participantNumberInput;
-    [SerializeField] private Dropdown groupsDropdown;
-    [SerializeField] private Dropdown daysDropdown;
+    [SerializeField] private TMP_InputField participantNumberInput;
+    [SerializeField] private TMP_Dropdown groupsDropdown;
+    [SerializeField] private TMP_Dropdown daysDropdown;
 
     private Button startButton;
 

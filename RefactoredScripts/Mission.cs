@@ -1,4 +1,4 @@
-using System.Globalization;
+using System.Collections;
 using System.Linq;
 using Sigtrap.VrTunnellingPro;
 using UnityEngine;
@@ -44,12 +44,11 @@ public class Mission : MonoBehaviour
     [SerializeField]
     private GameObject sciFiGunLightBlack;
 
+    private DataLogger dataLogger;
+    
     private Timers timers;
     private MissionState missionState = MissionState.WaitingInit;
     
-    // Prevent string format to display float as 1,111 instead of 1.111
-    private CultureInfo usCultureInfo = new("en-US"); 
-
     /* BUG : At the beginning those 3 parameters where regrouped into ExperimentParameters object
      * However I've got a null pointer exception.
      * TMP FIX: I decided moving on 3 parameters.
@@ -66,7 +65,6 @@ public class Mission : MonoBehaviour
         checkpointCollisionManager = playerTransform.GetComponent<CheckpointCollisionManager>();
 
         gameManager = FindObjectOfType<GameManager>();
-            
         timers = GetComponent<Timers>();
     }
 
@@ -94,7 +92,7 @@ public class Mission : MonoBehaviour
         InitializeTunneling();
         playerController.SnapRotation = hasRotationSnapping;
         playerController.SnapTranslation = hasTranslationSnapping;
-        
+
         // Updating ui
         compass.gameObject.SetActive(false);
         objectiveText.text = "Look around and when ready\npress the Y button!";
@@ -102,6 +100,8 @@ public class Mission : MonoBehaviour
         
         missionState = MissionState.StartMenu; // Updating mission state
         checkpointCollisionManager.InitializeMission(this); // Initialize checkpoints
+
+        OVRPlayerController.SnappingEvent += OnSnappingEvent; // Subscribe to SnappingEvent
     }
 
     /// <summary>
@@ -116,6 +116,34 @@ public class Mission : MonoBehaviour
         UpdateCheckpointObjective(0);
     }
 
+    /// <summary>
+    /// Called when the player snap : During Translation Snapping ou  Rotation Snapping 
+    /// </summary>
+    private void OnSnappingEvent(SnappingType snappingType, float cooldown) {
+        switch (snappingType) {
+            case SnappingType.Rotation:
+                tunnellingPro.angularVelocityMax = 0;
+                break;
+            case SnappingType.Translation:
+                tunnellingPro.accelerationMax = 0;
+                break;
+        }
+        StartCoroutine(StopSnappingVignette(snappingType, cooldown));
+    }
+
+    private IEnumerator StopSnappingVignette(SnappingType snappingType, float cooldown) {
+        yield return new WaitForSeconds(cooldown);
+        
+        switch (snappingType) {
+            case SnappingType.Rotation:
+                tunnellingPro.angularVelocityMax = 13;
+                break;
+            case SnappingType.Translation:
+                tunnellingPro.accelerationMax = 13;
+                break;
+        }
+    }
+    
     /// <summary>
     /// This method is called after the player has reached the last checkpoint
     /// </summary>
@@ -158,11 +186,6 @@ public class Mission : MonoBehaviour
     /// Initialize tunnelings parameters for the given experiment parameters
     /// </summary>
     private void InitializeTunneling() {
-        if (!hasTunneling) {
-            tunnellingPro.enabled = false;
-            return;
-        }
-            
         tunnellingPro.enabled = hasTunneling;
 
         // Tunneling
@@ -172,13 +195,13 @@ public class Mission : MonoBehaviour
             tunnellingPro.accelerationStrength = PlayerPrefs.GetFloat("tunnelingSpeed");
             tunnellingPro.angularVelocityStrength = PlayerPrefs.GetFloat("tunnelingSpeed");
         }
-        
+
         // Rotation
         if (PlayerPrefs.HasKey("SnappingRotation"))
             playerController.RotationRatchet = PlayerPrefs.GetFloat("SnappingRotation");
         if (PlayerPrefs.HasKey("SnappingRotationSpeed"))
             playerController.SnapRotationCooldown = PlayerPrefs.GetFloat("SnappingRotationSpeed");
-        
+
         // Translation
         if (PlayerPrefs.HasKey("SnappingTranslationSpeed"))
             playerController.SnapTranslationCooldown = PlayerPrefs.GetFloat("SnappingTranslationSpeed");
@@ -224,6 +247,8 @@ public class Mission : MonoBehaviour
     /// This method is called after the Player select a nausea level
     /// </summary>
     public void OnNauseaScoreSelection(int nauseaScore) {
+        OVRPlayerController.SnappingEvent -= OnSnappingEvent;
+        
         canvas.SetActive(false);
         selectables.SetActive(false);
         sciFiGunLightBlack.SetActive(false);
@@ -259,34 +284,27 @@ public class Mission : MonoBehaviour
     }
     
     private void UpdatePlayerLogs(int checkpointIndex) {
-        playerScript.playerData.Append(PlayerPrefs.GetString("ParticipantNumber") + ";");
-        playerScript.playerData.Append(PlayerPrefs.GetInt("GroupNumber") + ";");
-        playerScript.playerData.Append(PlayerPrefs.GetInt("DayNumber") + ";");
-            
-        playerScript.playerData.AppendFormat("{0};", 0); // TODO: Adding blockCounter
-        playerScript.playerData.AppendFormat("{0};", gameManager.conditionCounter);
-        
-        playerScript.playerData.AppendFormat("{0};", GetMissionNumber());
-        playerScript.playerData.AppendFormat("{0};", checkpointIndex);
-        
-        playerScript.playerData.AppendFormat("{0};", hasRotationSnapping);
-        playerScript.playerData.AppendFormat("{0};", hasTranslationSnapping);
-        playerScript.playerData.AppendFormat("{0};", hasTunneling);
-        playerScript.playerData.AppendFormat(usCultureInfo, "{0:f6};\n", timers.GetElapsedTime());
+        DataPayload data = new DataPayload(
+            gameManager.conditionCounter,
+            checkpointIndex,
+            GetMissionNumber(),
+            hasRotationSnapping,
+            hasTranslationSnapping,
+            hasTunneling,
+            timers.GetElapsedTime()
+        );
+        DataLogger.UpdatePlayerLogs(playerScript, data);
     }
 
     private void UpdatePlayerAverageLogs(float distance, int nauseaScore) {
-        playerScript.playerDataAverage.Append(PlayerPrefs.GetString("ParticipantNumber") + ";");
-        playerScript.playerDataAverage.Append(PlayerPrefs.GetInt("GroupNumber") + ";");
-        playerScript.playerDataAverage.Append(PlayerPrefs.GetInt("DayNumber") + ";");
-        
-        playerScript.playerDataAverage.AppendFormat("{0};", 0); // TODO: Adding blockCounter
-        playerScript.playerDataAverage.AppendFormat("{0};", gameManager.conditionCounter);
-        
-        playerScript.playerDataAverage.AppendFormat("{0};", GetMissionNumber());
-        playerScript.playerDataAverage.AppendFormat(usCultureInfo, "{0:f6};", timers.time / checkpoints.childCount - 1);
-        playerScript.playerDataAverage.AppendFormat(usCultureInfo, "{0:f6};", timers.timeOfReturn);
-        playerScript.playerDataAverage.AppendFormat("{0};",nauseaScore);
-        playerScript.playerDataAverage.AppendLine(distance + ";");
+        DataPayloadAverage data = new DataPayloadAverage(
+            gameManager.conditionCounter,
+            distance,
+            nauseaScore,
+            GetMissionNumber(),
+            timers.time / checkpoints.childCount - 1,
+            timers.timeOfReturn
+        );
+        DataLogger.UpdatePlayerAverageLogs(playerScript, data);
     }
 }
