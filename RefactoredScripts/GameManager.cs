@@ -62,6 +62,7 @@ public class GameManager : MonoBehaviour
     };
     private int[] playerExperimentParametersOrder;
     public int conditionCounter { get; private set; }
+    private ConditionApplier conditionApplier;
     
     private Player player;
     private MailTo mailTo;
@@ -84,6 +85,8 @@ public class GameManager : MonoBehaviour
         ArrayHelper.ShuffleArray(missions); // Randomize missions order
         InitializeTunnelingConditions(playerGroupNumber, playerDayNumber);
 
+        conditionApplier = FindObjectOfType<ConditionApplier>();
+        
         StartMission();
     }
 
@@ -96,7 +99,8 @@ public class GameManager : MonoBehaviour
         ExperimentParameters parameters = experimentalParametersArray[conditionCounter];
 
         mission.enabled = true;
-        mission.InitializeMission(parameters);
+        mission.InitializeMission();
+        conditionApplier.InitializeConditions(parameters);
     }
     
     /// <summary>

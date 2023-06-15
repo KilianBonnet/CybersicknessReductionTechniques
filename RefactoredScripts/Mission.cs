@@ -23,14 +23,12 @@ public class Mission : MonoBehaviour
     private CheckpointCollisionManager checkpointCollisionManager;
     
     private GameManager gameManager;
+    private ConditionApplier conditionApplier;
 
     [Tooltip("The parent GameObject of all the checkpoints")]
     [SerializeField]
     private Transform checkpoints;
 
-    [SerializeField]
-    private Tunnelling tunnellingPro;
-    
     [Header("UI Objects")]
     [SerializeField]
     private Text objectiveText;
@@ -48,15 +46,7 @@ public class Mission : MonoBehaviour
     
     private Timers timers;
     private MissionState missionState = MissionState.WaitingInit;
-    
-    /* BUG : At the beginning those 3 parameters where regrouped into ExperimentParameters object
-     * However I've got a null pointer exception.
-     * TMP FIX: I decided moving on 3 parameters.
-     */
-    private bool hasRotationSnapping;
-    private bool hasTranslationSnapping;
-    private bool hasTunneling;
-    
+
     private void Start()
     {
         playerController = playerTransform.GetComponent<OVRPlayerController>();
@@ -64,6 +54,7 @@ public class Mission : MonoBehaviour
         playerScript = playerTransform.GetComponent<Player>();
         checkpointCollisionManager = playerTransform.GetComponent<CheckpointCollisionManager>();
 
+        conditionApplier = FindObjectOfType<ConditionApplier>();
         gameManager = FindObjectOfType<GameManager>();
         timers = GetComponent<Timers>();
     }
@@ -71,28 +62,11 @@ public class Mission : MonoBehaviour
     /// <summary>
     /// Initialize a mission with the given experiment parameters
     /// </summary>
-    public void InitializeMission(ExperimentParameters parameters) {
-        // Saving parameters
-        hasRotationSnapping = parameters.hasRotationSnapping;
-        hasTranslationSnapping = parameters.hasTranslationSnapping;
-        hasTunneling = parameters.hasTunneling;
-        
-        // Logs
-        print($"Starting {gameObject.name} with parameters:, " +
-                  $"hasRotationSnapping: {hasRotationSnapping}, " +
-                  $"hasTranslationSnapping: {hasTranslationSnapping}, " +
-                  $"hasTunneling: {hasTunneling}"
-                  );
-        
+    public void InitializeMission() {
         // Teleporting player and block its movements
         TeleportPlayer(checkpoints.GetChild(0).position);
         playerController.CanMove = false;
-
-        // Setting up experiment parameters to hmd
-        InitializeTunneling();
-        playerController.SnapRotation = hasRotationSnapping;
-        playerController.SnapTranslation = hasTranslationSnapping;
-
+        
         // Updating ui
         compass.gameObject.SetActive(false);
         objectiveText.text = "Look around and when ready\npress the Y button!";
@@ -100,8 +74,6 @@ public class Mission : MonoBehaviour
         
         missionState = MissionState.StartMenu; // Updating mission state
         checkpointCollisionManager.InitializeMission(this); // Initialize checkpoints
-
-        OVRPlayerController.SnappingEvent += OnSnappingEvent; // Subscribe to SnappingEvent
     }
 
     /// <summary>
@@ -114,34 +86,6 @@ public class Mission : MonoBehaviour
         timers.checkpointTimeActive = true;
         
         UpdateCheckpointObjective(0);
-    }
-
-    /// <summary>
-    /// Called when the player snap : During Translation Snapping ou  Rotation Snapping 
-    /// </summary>
-    private void OnSnappingEvent(SnappingType snappingType, float cooldown) {
-        switch (snappingType) {
-            case SnappingType.Rotation:
-                tunnellingPro.angularVelocityMax = 0;
-                break;
-            case SnappingType.Translation:
-                tunnellingPro.accelerationMax = 0;
-                break;
-        }
-        StartCoroutine(StopSnappingVignette(snappingType, cooldown));
-    }
-
-    private IEnumerator StopSnappingVignette(SnappingType snappingType, float cooldown) {
-        yield return new WaitForSeconds(cooldown);
-        
-        switch (snappingType) {
-            case SnappingType.Rotation:
-                tunnellingPro.angularVelocityMax = 13;
-                break;
-            case SnappingType.Translation:
-                tunnellingPro.accelerationMax = 13;
-                break;
-        }
     }
     
     /// <summary>
@@ -182,33 +126,6 @@ public class Mission : MonoBehaviour
         characterController.enabled = true;
     }
 
-    /// <summary>
-    /// Initialize tunnelings parameters for the given experiment parameters
-    /// </summary>
-    private void InitializeTunneling() {
-        tunnellingPro.enabled = hasTunneling;
-
-        // Tunneling
-        if (PlayerPrefs.HasKey("tunnelingAmount"))
-            tunnellingPro.effectCoverage = PlayerPrefs.GetFloat("tunnelingAmount");
-        if (PlayerPrefs.HasKey("tunnelingSpeed")) {
-            tunnellingPro.accelerationStrength = PlayerPrefs.GetFloat("tunnelingSpeed");
-            tunnellingPro.angularVelocityStrength = PlayerPrefs.GetFloat("tunnelingSpeed");
-        }
-
-        // Rotation
-        if (PlayerPrefs.HasKey("SnappingRotation"))
-            playerController.RotationRatchet = PlayerPrefs.GetFloat("SnappingRotation");
-        if (PlayerPrefs.HasKey("SnappingRotationSpeed"))
-            playerController.SnapRotationCooldown = PlayerPrefs.GetFloat("SnappingRotationSpeed");
-
-        // Translation
-        if (PlayerPrefs.HasKey("SnappingTranslationSpeed"))
-            playerController.SnapTranslationCooldown = PlayerPrefs.GetFloat("SnappingTranslationSpeed");
-        if (PlayerPrefs.HasKey("SnappingTranslationDistance"))
-            playerController.SnapDistance = PlayerPrefs.GetFloat("SnappingTranslationDistance");
-    }
-
     private void Update() {
         if(missionState == MissionState.WaitingInit)
             return;
@@ -247,8 +164,6 @@ public class Mission : MonoBehaviour
     /// This method is called after the Player select a nausea level
     /// </summary>
     public void OnNauseaScoreSelection(int nauseaScore) {
-        OVRPlayerController.SnappingEvent -= OnSnappingEvent;
-        
         canvas.SetActive(false);
         selectables.SetActive(false);
         sciFiGunLightBlack.SetActive(false);
@@ -288,9 +203,9 @@ public class Mission : MonoBehaviour
             gameManager.conditionCounter,
             checkpointIndex,
             GetMissionNumber(),
-            hasRotationSnapping,
-            hasTranslationSnapping,
-            hasTunneling,
+            conditionApplier.hasRotationSnapping,
+            conditionApplier.hasTranslationSnapping,
+            conditionApplier.hasTunneling,
             timers.GetElapsedTime()
         );
         DataLogger.UpdatePlayerLogs(playerScript, data);

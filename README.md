@@ -44,7 +44,6 @@ Dependencies:
 - VR Tunneling Pro v1.4.0 
 ```
 
-
 ### OVRPlayerController
 It's the code made by Oculus in around 2019 includes in the old OculusIntegration plugin.
 While migrating to version 53.1 [I](https://github.com/KilianBonnet) noticed changes on OVRPlayerController script specifically.
@@ -61,7 +60,8 @@ Here are the big parts of the modifications
 - Boolean **TranslationSnapping**: Enable/Disable the translation snapping
 - Float **SnapDistance** : The distance to teleport when using translation snapping
 - Float **SnapRotationCooldown** & **SnapTranslationCooldown**: How long the user should wait between two snaps.
-- Float **snapRotationTimer** & **snapTranslationTimer**: Internal clocks to proceed cooldowns. 
+- Float **snapRotationTimer** & **snapTranslationTimer**: Internal clocks to proceed cooldowns.
+- This scripts invoke an event called `SnappingEvent` every time the user snap rotate & snap translate. It is listened by the ConditionApplier to create a tunneling effect.
 
 Edited code can is marked with "[Custom parameters]" or "[Custom code]" annotations.
 
@@ -84,7 +84,6 @@ This class is automatically executed when the project is launched. It is respons
 ### Mission
 The missions is represented by:
 * **The checkpoints to reach**. The user must traverse the checkpoints one by one. These disappear and appear according to the order of collision. There is always 1 maximum active checkpoint. Checkpoints are represented by `private Transform checkpoints;`. It is important to note that GetChild(0) corresponds to the player's teleport point. The first checkpoint is at index 1.
-* **The experiment parameters**. Experiment parameters are given when the `InitializeMission()` method is call. Experiment parameters represents the different visual effects (such as tunnelling) and movement effects (such as snapping) that are effective or not on the current level.
 
 During a mission, the mission can be in different states that will modify the objectives or the user's movements.
 | Mission State | Details |      
@@ -94,6 +93,16 @@ During a mission, the mission can be in different states that will modify the ob
 | Playing | The user pressed the button to start the mission. The user must now go through the n checkpoints that will appear as the mission progresses. Related: `OnCheckpointReached()`, `UpdatePlayerLogs()`, `ReturnMission()`, `UpdateCheckpointObjective()` |
 | WaitingForStartPoint | The user has completed the n checkpoints, and now needs to return to the starting point and press a button to activate the nausea menu. The mission listens to the player's input to determine whether a key has been pressed. Related: `CheckForEvaluateMissionInput()`, `EvaluateMission()` |
 | NauseaMenu | The mission activates the nausea menu canvas, and the user must enter its level of discomfort. Once the discomfort level has been selected, the user's average score is recorded and the lead is given to the GameManager. `OnNauseaScoreSelection()`, `UpdatePlayerAverageLogs()` |
+
+### ConditionApplier
+This class manage all the condition-related stuff. For instance, enabling/disabling  rotation snapping or translation snapping or even tweak snapping and tunneling parameter.
+
+**Experiment parameters** are given when the `InitializeConditions()` method is call. Experiment parameters represents the different visual effects (such as tunnelling) and movement effects (such as snapping) that are effective or not on the current level.
+
+When `InitializeConditions()` is called it will also read the data stored in the PlayerPrefs to set parameters such as the cooldown between two snap rotation/translation or even the distance and the angle of a snapping.
+
+As mentioned in OVRPlayerController, this script listen to SnappingEvent. Every time the user will snap, the ConditionApplier will, depending on whether the Tunneling is enable or not, tweak the VrTunnellingPro parameters to add a vignette (tunnelling) to the player vision. 
+
 
 ### PlayerDataWriter
 PlayerDataWriter is the class used to transform the user collected data into a text file. This text file is saved into the persistentDataPath. `WritePlayerData()` returns the given paths where the data files has been saved.
