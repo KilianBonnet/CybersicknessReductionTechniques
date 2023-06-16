@@ -1,6 +1,4 @@
-using System.Collections;
 using System.Linq;
-using Sigtrap.VrTunnellingPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -200,6 +198,7 @@ public class Mission : MonoBehaviour
     
     private void UpdatePlayerLogs(int checkpointIndex) {
         DataPayload data = new DataPayload(
+            gameManager.blockCounter,
             gameManager.conditionCounter,
             checkpointIndex,
             GetMissionNumber(),
@@ -213,6 +212,7 @@ public class Mission : MonoBehaviour
 
     private void UpdatePlayerAverageLogs(float distance, int nauseaScore) {
         DataPayloadAverage data = new DataPayloadAverage(
+            gameManager.blockCounter,
             gameManager.conditionCounter,
             distance,
             nauseaScore,

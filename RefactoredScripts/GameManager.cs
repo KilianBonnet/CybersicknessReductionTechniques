@@ -61,8 +61,13 @@ public class GameManager : MonoBehaviour
         new (true, true)    // 3
     };
     private int[] playerExperimentParametersOrder;
-    public int conditionCounter { get; private set; }
     private ConditionApplier conditionApplier;
+    public int conditionCounter { get; private set; }
+
+    [SerializeField] 
+    private int totalBlock;
+    public int blockCounter{ get; private set; }
+    
     
     private Player player;
     private MailTo mailTo;
@@ -145,7 +150,9 @@ public class GameManager : MonoBehaviour
     /// Updating the UI according to the new condition counter and the size of experimental parameters to try.
     /// </summary>
     private void RefreshMissionCounter() {
-        trialUI.text = (conditionCounter + 1) + "/" + experimentalParametersArray.Length;
+        trialUI.text = $"Block: {blockCounter + 1}/{totalBlock}\n" +
+                       $"Condition: {conditionCounter + 1}/{experimentalParametersArray.Length}\n" +
+                       $"Mission: {missionCounter + 1}/{missions.Length}";
     }
 
     /// <summary>
@@ -157,7 +164,7 @@ public class GameManager : MonoBehaviour
         
         IncreaseCounterVariables();
         // Check if all the experimental parameters were carried out
-        if (conditionCounter >= experimentalParametersArray.Length) { // TODO : Put experimentalParametersArray.Length after testing
+        if (blockCounter >= totalBlock) { // TODO : You can tweak this to test specific part of the expedient
             string[] filePaths = PlayerDataWriter.WritePlayerData(player); // Saving player data
             mailTo.SendEmail(player, filePaths);
             SceneManager.LoadScene("End");
@@ -170,11 +177,15 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void IncreaseCounterVariables() {
         missionCounter++; // Going to the next mission
-        
-        // Going to the next conditions
-        if (missionCounter < missions.Length)
-            return;
+        // Check for the last mission has been reach, if so go to the next condition
+        if (missionCounter < missions.Length) return;
         missionCounter = 0;
-        conditionCounter++;
+        
+        conditionCounter++;  // Going to the next conditions
+        // Check for the last condition has been reach, if so go to the next block
+        if(conditionCounter < experimentalParametersArray.Length) return;
+        conditionCounter = 0;
+
+        blockCounter++; // Going to the next block
     }
 }

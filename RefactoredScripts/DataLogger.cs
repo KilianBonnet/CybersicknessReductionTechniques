@@ -2,6 +2,7 @@
 using UnityEngine;
 
 public class DataPayload {
+    public readonly int blockCounter;
     public readonly int conditionCounter;
     
     public readonly int checkpointIndex;
@@ -13,7 +14,8 @@ public class DataPayload {
 
     public readonly float elapsedTime;
 
-    public DataPayload(int conditionCounter, int checkpointIndex, string missionNumber, bool hasRotationSnapping, bool hasTranslationSnapping, bool hasTunneling, float elapsedTime) {
+    public DataPayload(int blockCounter,int conditionCounter, int checkpointIndex, string missionNumber, bool hasRotationSnapping, bool hasTranslationSnapping, bool hasTunneling, float elapsedTime) {
+        this.blockCounter = blockCounter;
         this.conditionCounter = conditionCounter;
         this.checkpointIndex = checkpointIndex;
         this.missionNumber = missionNumber;
@@ -25,6 +27,7 @@ public class DataPayload {
 }
 
 public class DataPayloadAverage {
+    public readonly int blockCounter;
     public readonly int conditionCounter;
     
     public readonly float distance;
@@ -35,7 +38,8 @@ public class DataPayloadAverage {
     public readonly float averageTime;
     public readonly float timeOfReturn;
 
-    public DataPayloadAverage(int conditionCounter, float distance, int nauseaScore, string missionNumber, float averageTime, float timeOfReturn) {
+    public DataPayloadAverage(int blockCounter, int conditionCounter, float distance, int nauseaScore, string missionNumber, float averageTime, float timeOfReturn) {
+        this.blockCounter = blockCounter;
         this.conditionCounter = conditionCounter;
         this.distance = distance;
         this.nauseaScore = nauseaScore;
@@ -54,7 +58,7 @@ public class DataLogger {
         playerScript.playerData.Append(PlayerPrefs.GetInt("GroupNumber") + ";");
         playerScript.playerData.Append(PlayerPrefs.GetInt("DayNumber") + ";");
             
-        playerScript.playerData.AppendFormat("{0};", 0); // TODO: Adding blockCounter
+        playerScript.playerData.AppendFormat("{0};", data.blockCounter);
         playerScript.playerData.AppendFormat("{0};", data.conditionCounter);
         
         playerScript.playerData.AppendFormat("{0};", data.missionNumber);
@@ -71,7 +75,7 @@ public class DataLogger {
         playerScript.playerDataAverage.Append(PlayerPrefs.GetInt("GroupNumber") + ";");
         playerScript.playerDataAverage.Append(PlayerPrefs.GetInt("DayNumber") + ";");
         
-        playerScript.playerDataAverage.AppendFormat("{0};", 0); // TODO: Adding blockCounter
+        playerScript.playerDataAverage.AppendFormat("{0};", data.blockCounter);
         playerScript.playerDataAverage.AppendFormat("{0};", data.conditionCounter);
         
         playerScript.playerDataAverage.AppendFormat("{0};", data.missionNumber);
