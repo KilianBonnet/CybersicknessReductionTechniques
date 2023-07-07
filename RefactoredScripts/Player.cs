@@ -1,8 +1,6 @@
 using System.Text;
 using UnityEngine;
 
-[RequireComponent(typeof(OVRPlayerController))]
-[RequireComponent(typeof(CheckpointCollisionManager))]
 public class Player : MonoBehaviour {
     public string playerName {  get; private set; }
     public readonly StringBuilder playerData = new();

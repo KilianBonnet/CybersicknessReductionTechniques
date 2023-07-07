@@ -82,6 +82,6 @@ public class DataLogger {
         playerScript.playerDataAverage.AppendFormat(usCultureInfo, "{0:f6};", data.averageTime);
         playerScript.playerDataAverage.AppendFormat(usCultureInfo, "{0:f6};", data.timeOfReturn);
         playerScript.playerDataAverage.AppendFormat("{0};", data.nauseaScore);
-        playerScript.playerDataAverage.AppendLine(data.distance + ";");
+        playerScript.playerDataAverage.AppendFormat(usCultureInfo, "{0:f6};", data.distance);
     }
 }

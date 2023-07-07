@@ -38,10 +38,10 @@ public class OVRPlayerController : MonoBehaviour {
 
     /// <summary>
     /// [Custom parameters] Allowing movements.
-    /// </summary>s
+    /// </summary>
     [Header("Movements configuration")]
     public bool CanMove;
-
+    
     /// <summary>
     /// The rate acceleration during movement.
     /// </summary>

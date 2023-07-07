@@ -28,10 +28,10 @@ The main application is divided into 3 scenes: `Menu`, `TunnellingSnapping` and 
 ***
 
 ## Technical glossary 
-| Term | Alias | Signification |          
+| Term | Alias | Signification |        
 | - | - | - |
-| Condition | Experiment parameters | Set of parameters affecting the user's view and movements. This parameter set is made up of: hasRotationSnapping, hasTranslationSnapping, hasTunneling.
-| Mission | N/A |During the experience, the user will carry out several missions. The missions consist of **an objective**: cross the checkpoints, **an end-of-mission objective**: return to the starting point and **an end-of-mission quiz** to help users self-assess their level of discomfort. |
+| Condition | Experiment parameters | Set of parameters affecting the user's view and movements. This parameter set is made up of: hasRotationSnapping, hasTranslationSnapping, hasTunneling. |
+| Mission | N/A | During the experience, the user will carry out several missions. The missions consist of **an objective**: cross the checkpoints, **an end-of-mission objective**: return to the starting point and **an end-of-mission quiz** to help users self-assess their level of discomfort. |
 | Snap | Snap rotation - Snap translation | In virtual reality, the term "snap" refers to the abrupt and precise movement or rotation of an object or the user's viewpoint within the virtual environment. It involves quick and accurate repositioning or reorientation without the need for smooth, continuous motion. Snap translation allows for instant and precise relocation from one point to another, while snap rotation enables immediate and accurate changes in the direction faced by the user.  |
 
 ***
