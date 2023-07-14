@@ -23,6 +23,8 @@ public class Mission : MonoBehaviour
     private GameManager gameManager;
     private ConditionApplier conditionApplier;
 
+    private DirectionManager directionManager;
+
     [Tooltip("The parent GameObject of all the checkpoints")]
     [SerializeField]
     private Transform checkpoints;
@@ -33,8 +35,6 @@ public class Mission : MonoBehaviour
     
     [SerializeField]
     private GameObject selectables, canvas;
-    [SerializeField]
-    private Compass compass;
 
     [Header("Other References")]
     [SerializeField]
@@ -52,6 +52,7 @@ public class Mission : MonoBehaviour
         playerScript = playerTransform.GetComponent<Player>();
         checkpointCollisionManager = playerTransform.GetComponent<CheckpointCollisionManager>();
 
+        directionManager = FindObjectOfType<DirectionManager>();
         conditionApplier = FindObjectOfType<ConditionApplier>();
         gameManager = FindObjectOfType<GameManager>();
         timers = GetComponent<Timers>();
@@ -66,7 +67,7 @@ public class Mission : MonoBehaviour
         playerController.CanMove = false;
         
         // Updating ui
-        compass.gameObject.SetActive(false);
+        directionManager.HideDirections();
         objectiveText.text = "Look around and when ready\npress the Y button!";
         objectiveText.color = new Color(255f, 255f, 255f);
         
@@ -79,7 +80,7 @@ public class Mission : MonoBehaviour
     /// </summary>
     private void StartMission() {
         missionState = MissionState.Playing;
-        compass.gameObject.SetActive(true);
+        directionManager.ShowDirections();
         playerController.CanMove = true;
         timers.checkpointTimeActive = true;
         
@@ -94,7 +95,7 @@ public class Mission : MonoBehaviour
         objectiveText.color = new Color(255f, 0.0f, 0.0f);
         
         timers.timeOfReturnActive = true;
-        compass.gameObject.SetActive(false);
+        directionManager.HideDirections();
 
         missionState = MissionState.WaitingForStartPoint;
     }
@@ -107,7 +108,7 @@ public class Mission : MonoBehaviour
         missionState = MissionState.NauseaMenu;
         timers.timeOfReturnActive = false;
         playerController.CanMove = false;
-        compass.gameObject.SetActive(false);
+        directionManager.HideDirections();
         
         canvas.SetActive(true);
         selectables.SetActive(true);
@@ -182,7 +183,8 @@ public class Mission : MonoBehaviour
     private void UpdateCheckpointObjective(int checkpointIndex) {
         Transform newCheckpoint = checkpoints.GetChild(++checkpointIndex);
         newCheckpoint.gameObject.SetActive(true); // Enable the next checkpoint
-        compass.target = newCheckpoint.position;
+        
+        directionManager.UpdateObjective(newCheckpoint.position);
 
         // Update objective ui (text & colour)
         objectiveText.text = "Go to checkpoint " + checkpointIndex;
