@@ -72,6 +72,6 @@ public class MenuInputLoader : MonoBehaviour
             Debug.Log("Invalid UserID key format. The parameters could not be parsed.");
         }
         
-        SceneManager.LoadScene("TunnelingSnapping");
+        SceneManager.LoadScene("Tutorial");
     }
 }

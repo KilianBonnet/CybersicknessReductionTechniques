@@ -45,6 +45,8 @@ public class DirectionManager : MonoBehaviour {
     }
 
     public void ShowDirections() {
+        isDisplaying = true;
+        toggleInfoUi.gameObject.SetActive(true);
         switch (currentDirectionMethod) {
             case DirectionMethod.COMPASS:
                 compass.gameObject.SetActive(true);
@@ -57,7 +59,6 @@ public class DirectionManager : MonoBehaviour {
     }
 
     public void UpdateObjective(Vector3 newObjective) {
-        isDisplaying = true;
         objective = newObjective;
         ShowDirections();
     }
