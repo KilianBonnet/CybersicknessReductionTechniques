@@ -116,4 +116,14 @@ The recipient's e-mail address and SMTP server settings can be configured from t
 
 `SendEmail()` is a public function that should be called to end the experiment result by mail.
 * **Player** is the given player that completed the experiment.
-* **filePaths** is an array of string representing the path to the data file to send attached in the mail. 
+* **filePaths** is an array of string representing the path to the data file to send attached in the mail.
+
+### Trail
+Trail is the class used to draw a trail between the current user's position and a given coordinate. The given coordinate is usually the position of the next checkpoint.
+The trail script relies on the NavMeshAgent present by default in Unity. NavMeshAgent uses a modified version of A* path-finding algorithm.
+
+`DrawTrail()` should be called whenever you want to create a trail. It takes a Vector3 in input: its destination point.
+
+`UpdateTrail()` and `Update()` work together, every x seconds (that you can specify on the script parameters) it will update the trail shape based on the new position of the user.
+
+`StopTrail()` stops the trail 👍.

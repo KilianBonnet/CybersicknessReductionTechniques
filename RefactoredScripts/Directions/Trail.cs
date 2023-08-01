@@ -14,7 +14,6 @@ public class Trail : MonoBehaviour {
     
     private Vector3 trailHead;
     private Vector3 trailTail;
-    
 
     private void Start() {
         playerTransform = GameObject.FindWithTag("Player").transform;
