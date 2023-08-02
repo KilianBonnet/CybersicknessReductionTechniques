@@ -23,7 +23,7 @@ public class TutorialManager : MonoBehaviour {
         GameObject player = GameObject.FindWithTag("Player");
         playerTransform = player.transform;
         characterController = player.GetComponent<CharacterController>();
-        
+
         tutorials[0].enabled = true;
         TutorialLevel.TutorialEndEvent += OnEndEvent;
     }
@@ -31,7 +31,7 @@ public class TutorialManager : MonoBehaviour {
     private void OnEndEvent() {
         transitionTutorial.enabled = false;
         tutorials[tutorialIndex].enabled = false;
-        
+
         tutorialIndex++;
         TeleportPlayer(teleportAnchor);
         

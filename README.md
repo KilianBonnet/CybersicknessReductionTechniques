@@ -127,3 +127,8 @@ The trail script relies on the NavMeshAgent present by default in Unity. NavMesh
 `UpdateTrail()` and `Update()` work together, every x seconds (that you can specify on the script parameters) it will update the trail shape based on the new position of the user.
 
 `StopTrail()` stops the trail 👍.
+
+### Direction Manager
+Direction Manager is used to give to the user indications about the position of the next checkpoint. On the original project, the position of the next checkpoint was indicated by a compass. However, according to [this studies](https://cognitiveresearchjournal.springeropen.com/articles/10.1186/s41235-023-00466-1) the compass can participate to the reduction of the user's cybersickness. 
+For that reason, I added a new direction system called TrailSystem that replaces the current compass.
+Direction Manager allows the experimenter to switch between the two direction indication systems by pressing a key. This script is also the interface that allows the Mission script to update the coordinate the compass / trail is pointing at. 
