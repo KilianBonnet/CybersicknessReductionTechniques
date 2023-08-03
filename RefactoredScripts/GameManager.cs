@@ -17,7 +17,7 @@ public struct Group {
         this.experimentParametersOrder = experimentParametersOrder;
     }
 }
-
+ 
 /// <summary>
 /// Class representing all the experimental parameters
 /// </summary>
