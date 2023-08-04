@@ -23,24 +23,28 @@ public class MailTo : MonoBehaviour {
     public void SendEmail(Player player, string[] filePaths)
     {
         // Building mail
-        MailAddress fromAddress = new MailAddress(smtpUsername, "HCI Lab");
-        MailAddress toAddress = new MailAddress(destinationMail);
-        
-        MailMessage mail = new MailMessage(fromAddress, toAddress);
-        mail.Subject = $"User data report ({player.playerName})";
-        mail.Body = $"Attached, data from {player.playerName} recorded at {DateTime.Now.ToString(CultureInfo.CurrentCulture)}";
-        
+        MailAddress fromAddress = new(smtpUsername, "HCI Lab");
+        MailAddress toAddress = new(destinationMail);
+
+        MailMessage mail = new(fromAddress, toAddress)
+        {
+            Subject = $"User data report ({player.playerName})",
+            Body = $"Attached, data from {player.playerName} recorded at {DateTime.Now.ToString(CultureInfo.CurrentCulture)}"
+        };
+
         // Adding attachments
         foreach (string filePath in filePaths)
         {
-            Attachment attachment = new Attachment(filePath);
+            Attachment attachment = new(filePath);
             mail.Attachments.Add(attachment);
         }
-        
+
         // SMTP client configuration
-        SmtpClient smtpClient = new SmtpClient(smtpServer, smtpPort);
-        smtpClient.Credentials = new NetworkCredential(smtpUsername, smtpPassword);
-        smtpClient.EnableSsl = true;
+        SmtpClient smtpClient = new(smtpServer, smtpPort)
+        {
+            Credentials = new NetworkCredential(smtpUsername, smtpPassword),
+            EnableSsl = true
+        };
 
         try {
             smtpClient.Send(mail);
